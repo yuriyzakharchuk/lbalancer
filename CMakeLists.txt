@@ -10,7 +10,7 @@ find_package(Threads REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREAD ON)
-find_package(Boost 1.73 REQUIRED COMPONENTS system thread regex)
+find_package(Boost 1.71 REQUIRED COMPONENTS system thread regex)
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${Boost_LIBRARY_DIRS})
