@@ -25,7 +25,7 @@ lb::frontend::frontend::start_accept() {
 void
 lb::frontend::frontend::handle_accept(const boost::system::error_code &error) {
     if (!error) {
-        new_session_->run();
+        new_session_->start_session();
     }
     start_accept();
 }

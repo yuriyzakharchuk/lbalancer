@@ -18,7 +18,7 @@ endif (Boost_FOUND)
 
 set(BOOST_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
-add_definitions(-DBOOST_ASIO_ENABLE_HANDLER_TRACKING)
+# add_definitions(-DBOOST_ASIO_ENABLE_HANDLER_TRACKING)
 
 add_executable(load_balancer
         src/main.cpp
@@ -28,6 +28,7 @@ add_executable(load_balancer
         src/session/session.cpp
         src/session/session_handler.cpp
         src/workers/service_pool.cpp
-        src/frontend/frontend.cpp)
+        src/frontend/frontend.cpp
+        src/helpers/configurator.cpp)
 
-target_link_libraries(load_balancer PRIVATE Threads::Threads ${BOOST_LIBS})
+target_link_libraries(load_balancer PRIVATE Threads::Threads ${BOOST_LIBS} config++)

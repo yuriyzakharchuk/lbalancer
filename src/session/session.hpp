@@ -12,9 +12,10 @@ namespace lb::session {
 
     class session : public std::enable_shared_from_this<session> {
     public:
-        using backend_t = lb::backend::backend;
-        using socket_t = boost::asio::ip::tcp::socket;
-        using resolver_t = boost::asio::ip::tcp::resolver;
+        using backend_t     = lb::backend::backend;
+        using socket_t      = boost::asio::ip::tcp::socket;
+        using resolver_t    = boost::asio::ip::tcp::resolver;
+        using buffer_t      = boost::asio::streambuf;
 
         explicit session(boost::asio::io_service &,
                          backend_t &,
@@ -24,7 +25,7 @@ namespace lb::session {
         get_socket();
 
         void
-        run();
+        start_session();
 
     private:
         boost::asio::io_service &service_;
@@ -33,28 +34,23 @@ namespace lb::session {
         socket_t frontend_socket_;
         socket_t backend_socket_;
 
-        boost::asio::streambuf frontend_reading_buffer_;
-        boost::asio::streambuf backend_reading_buffer_;
+        buffer_t fb_buffer_;
+        buffer_t bf_buffer_;
+
+        //buffer_t::const_buffers_type input_sequence_;
+        //buffer_t::mutable_buffers_type output_sequence_;
 
         void
-        start_session(const boost::system::error_code &,
-                      const boost::asio::ip::tcp::endpoint &);
+        frontend_read();
 
         void
-        handle_frontend_reading(const boost::system::error_code &,
-                                std::size_t);
+        frontend_write();
 
         void
-        handle_frontend_writing(const boost::system::error_code &,
-                                std::size_t);
+        backend_read();
 
         void
-        handle_backend_reading(const boost::system::error_code &,
-                               std::size_t);
-
-        void
-        handle_backend_writing(const boost::system::error_code &,
-                               std::size_t);
+        backend_write();
     };
 }
 

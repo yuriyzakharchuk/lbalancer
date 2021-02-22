@@ -27,10 +27,11 @@ lb::server::server(const std::string &accept_address,
     for (int i = 0; i < 1; ++i) {
         // TODO: refactor that shit
         std::vector<std::pair<std::string, std::string>> servers;
-        servers.emplace_back(std::pair("127.0.0.1", "6000"));
-        servers.emplace_back(std::pair("127.0.0.1", "7000"));
         servers.emplace_back(std::pair("127.0.0.1", "8000"));
-        servers.emplace_back(std::pair("192.168.1.6", "6000"));
+        //servers.emplace_back(std::pair("192.168.122.97", "9000"));
+        //servers.emplace_back(std::pair("192.168.122.227", "9000"));
+        //servers.emplace_back(std::pair("192.168.122.17", "9000"));
+        //servers.emplace_back(std::pair("91.202.128.71", "80"));
 
         auto f = lb::frontend::frontend(service_pool_, acceptor_, back::backend_pool {
                 back::strategy::round_robin,
@@ -43,15 +44,15 @@ lb::server::server(const std::string &accept_address,
 
 
 void
-lb::server::run() {
-    service_pool_.run_all();
-}
-
-
-void
 lb::server::start_accept() {
     for (auto &frontend : frontend_pool_) {
         frontend.start_accept();
     }
+}
+
+
+void
+lb::server::run() {
+    service_pool_.run_all();
 }
 

@@ -2,8 +2,8 @@
 // Created by yuriy on 2/10/21.
 //
 
-#ifndef LOAD_BALANCER_CONFIGURATOR_H
-#define LOAD_BALANCER_CONFIGURATOR_H
+#ifndef LOAD_BALANCER_CONFIGURATOR_HPP
+#define LOAD_BALANCER_CONFIGURATOR_HPP
 
 
 namespace lb::helpers {
@@ -19,4 +19,4 @@ namespace lb::helpers {
     };
 }
 
-#endif //LOAD_BALANCER_CONFIGURATOR_H
+#endif //LOAD_BALANCER_CONFIGURATOR_HPP
