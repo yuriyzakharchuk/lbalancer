@@ -1,34 +1,46 @@
-cmake_minimum_required(VERSION 3.10)
-project(load_balancer)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
+PROJECT(load_balancer)
 
-set(CMAKE_CXX_STANDARD 17)
+SET(CMAKE_CXX_STANDARD 17)
 
+# PThread library
+SET(THREADS_PREFER_PTHREAD_FLAG ON)
+FIND_PACKAGE(Threads REQUIRED)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
-
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREAD ON)
-find_package(Boost 1.71 REQUIRED COMPONENTS system thread regex)
+# Boost.Asio library
+SET(Boost_USE_STATIC_LIBS OFF)
+SET(Boost_USE_MULTITHREAD ON)
+FIND_PACKAGE(Boost 1.71 REQUIRED COMPONENTS system
+                                            thread)
 if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    link_directories(${Boost_LIBRARY_DIRS})
+    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 endif (Boost_FOUND)
-
-set(BOOST_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
+SET(BOOST_LIBS ${Boost_SYSTEM_LIBRARY}
+               ${Boost_THREAD_LIBRARY}
+               ${Boost_REGEX_LIBRARY})
 
 # add_definitions(-DBOOST_ASIO_ENABLE_HANDLER_TRACKING)
 
-add_executable(load_balancer
-        src/main.cpp
-        src/server/server.cpp
-        src/backend/backend_pool.cpp
-        src/backend/backend.cpp
-        src/session/session.cpp
-        src/session/session_handler.cpp
-        src/workers/service_pool.cpp
-        src/frontend/frontend.cpp
-        src/helpers/configurator.cpp)
+# Jsoncpp library
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(JSONCPP jsoncpp)
+LINK_LIBRARIES(${JSONCPP_LIBRARIES})
 
-target_link_libraries(load_balancer PRIVATE Threads::Threads ${BOOST_LIBS} config++)
+ADD_EXECUTABLE(load_balancer
+        src/main.cpp
+        src/core/server/server.cpp
+        src/core/backend/backend_pool.cpp
+        src/core/backend/backend.cpp
+        src/core/session/session.cpp
+        src/core/session/session_handler.cpp
+        src/core/workers/service_pool.cpp
+        src/core/frontend/frontend.cpp
+
+        src/helpers/configurator.cpp
+
+        src/os/unix/daemonize.cpp)
+
+target_link_libraries(load_balancer PRIVATE Threads::Threads
+                                            ${BOOST_LIBS}
+                                            ${JSONCPP_LIBRARIES})
