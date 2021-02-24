@@ -37,9 +37,6 @@ namespace lb::session {
         buffer_t fb_buffer_;
         buffer_t bf_buffer_;
 
-        //buffer_t::const_buffers_type input_sequence_;
-        //buffer_t::mutable_buffers_type output_sequence_;
-
         void
         frontend_read();
 
