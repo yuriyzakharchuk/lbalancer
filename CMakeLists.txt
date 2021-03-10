@@ -33,6 +33,7 @@ ADD_EXECUTABLE(load_balancer
         src/core/backend/backend_pool.cpp
         src/core/backend/backend.cpp
         src/core/session/tcp/tcp_session.cpp
+        src/core/session/http/http_session.cpp
         src/core/workers/service_pool.cpp
         src/core/frontend/frontend.cpp
 

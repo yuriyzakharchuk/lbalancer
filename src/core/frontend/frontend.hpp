@@ -10,6 +10,7 @@
 
 #include "../session/basic_session.hpp"
 #include "../session/tcp/tcp_session.hpp"
+#include "../session/http/http_session.hpp"
 
 
 namespace lb::frontend {

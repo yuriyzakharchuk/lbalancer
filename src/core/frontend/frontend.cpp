@@ -5,7 +5,7 @@ lb::frontend::frontend::frontend(workers::service_pool &service_pool,
                                  boost::asio::ip::tcp::acceptor &acceptor,
                                  lb::backend::backend_pool backend_pool)
         : service_pool_(service_pool), acceptor_(acceptor),
-          backend_pool_(std::move(backend_pool)), new_session_() {
+          backend_pool_(std::move(backend_pool)), new_session_(nullptr) {
 }
 
 
