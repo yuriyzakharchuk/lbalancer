@@ -5,6 +5,7 @@
 #ifndef LOAD_BALANCER_CONFIGURATOR_HPP
 #define LOAD_BALANCER_CONFIGURATOR_HPP
 
+#include <string>
 
 namespace lb::helpers {
     class configurator {
@@ -14,7 +15,7 @@ namespace lb::helpers {
         int thread_count();
 
     private:
-        static const char *default_config_path_;
+        static const std::string default_config_path_;
 
     };
 }

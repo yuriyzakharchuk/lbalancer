@@ -6,6 +6,7 @@
 #include "../workers/service_pool.hpp"
 #include "../frontend/frontend.hpp"
 #include "../backend/backend_pool.hpp"
+#include "../session/basic_session.hpp"
 
 
 namespace lb {

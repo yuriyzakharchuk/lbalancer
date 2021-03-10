@@ -32,13 +32,11 @@ ADD_EXECUTABLE(load_balancer
         src/core/server/server.cpp
         src/core/backend/backend_pool.cpp
         src/core/backend/backend.cpp
-        src/core/session/session.cpp
-        src/core/session/session_handler.cpp
+        src/core/session/tcp/tcp_session.cpp
         src/core/workers/service_pool.cpp
         src/core/frontend/frontend.cpp
 
         src/helpers/configurator.cpp
-
         src/os/unix/daemonize.cpp)
 
 target_link_libraries(load_balancer PRIVATE Threads::Threads

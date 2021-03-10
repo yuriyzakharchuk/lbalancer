@@ -3,7 +3,8 @@
 
 namespace lb::backend {
     enum class strategy {
-        round_robin
+        round_robin,
+        least_connection
     };
 }
 

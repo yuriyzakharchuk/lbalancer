@@ -11,9 +11,9 @@ main(int argc, char *argv[]) {
 
     // lb::helpers::configurator configurator;
 //#ifdef NDEBUG
-    if (lb::os_unix::daemonize()) {
+    //if (lb::os_unix::daemonize()) {
 
-    }
+    //}
 //#endif //NDEBUG
 
     lb::server server { "0.0.0.0", "5000", 6 };

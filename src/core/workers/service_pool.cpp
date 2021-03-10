@@ -31,8 +31,8 @@ lb::workers::service_pool::run_all() {
             // TODO: log if service stopped
         }));
     }
-    for (auto &t : thread_pool_) {
-        t->join();
+    for (auto &thread : thread_pool_) {
+        thread->join();
     }
 }
 

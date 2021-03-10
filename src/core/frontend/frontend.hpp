@@ -6,8 +6,10 @@
 #include <boost/asio.hpp>
 
 #include "../backend/backend_pool.hpp"
-#include "../session/session.hpp"
 #include "../workers/service_pool.hpp"
+
+#include "../session/basic_session.hpp"
+#include "../session/tcp/tcp_session.hpp"
 
 
 namespace lb::frontend {
@@ -24,8 +26,7 @@ namespace lb::frontend {
         workers::service_pool &service_pool_;
         boost::asio::ip::tcp::acceptor &acceptor_;
         lb::backend::backend_pool backend_pool_;
-        std::shared_ptr<session::session> new_session_;
-        lb::session::session_handler session_handler_;
+        std::shared_ptr<session::basic_session> new_session_;
 
         void
         handle_accept(const boost::system::error_code &);
