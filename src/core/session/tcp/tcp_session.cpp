@@ -1,8 +1,9 @@
 #include "tcp_session.hpp"
 
 
-lb::session::tcp_session::tcp_session(boost::asio::io_service &service, backend_t &backend)
+lb::session::tcp_session::tcp_session(boost::asio::io_service &service, backend_t &backend, std::size_t buffer_len)
     : lb::session::basic_session(service, backend),
+      buffer_len_(buffer_len),
       fb_buffer_(),
       bf_buffer_() {
 }
@@ -10,7 +11,7 @@ lb::session::tcp_session::tcp_session(boost::asio::io_service &service, backend_
 
 void
 lb::session::tcp_session::start_session() {
-    frontend_socket_.async_receive(fb_buffer_.prepare(8192),
+    frontend_socket_.async_receive(fb_buffer_.prepare(buffer_len_),
                                    0,
                                    [c = shared_from_this()](const boost::system::error_code& error,
                                                             std::size_t bytes_transferred) {
@@ -36,7 +37,7 @@ lb::session::tcp_session::start_session() {
 
 void
 lb::session::tcp_session::frontend_read() {
-    frontend_socket_.async_receive(fb_buffer_.prepare(8192),
+    frontend_socket_.async_receive(fb_buffer_.prepare(buffer_len_),
                                    0,
                                    [c = shared_from_this()](const boost::system::error_code& error,
                                                   std::size_t bytes_transferred) {
@@ -74,7 +75,7 @@ lb::session::tcp_session::frontend_write() {
 
 void
 lb::session::tcp_session::backend_read() {
-    backend_socket_.async_receive(bf_buffer_.prepare(8192),
+    backend_socket_.async_receive(bf_buffer_.prepare(buffer_len_),
                                    0,
                                    [c = shared_from_this()](const boost::system::error_code& error,
                                                             std::size_t bytes_transferred) {

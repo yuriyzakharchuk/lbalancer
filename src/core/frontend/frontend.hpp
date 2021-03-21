@@ -13,16 +13,15 @@
 
 #include "../backend/backend_pool.hpp"
 #include "../workers/service_pool.hpp"
+#include "../../helpers/meta/meta_frontend.hpp"
 
 
 namespace lb::frontend {
     class frontend {
     public:
-        frontend(const std::string &accept_address,
-                 const std::string &port,
-                 workers::service_pool &,
-                 lb::backend::backend_pool,
-                 lb::session::mode);
+        frontend(const helpers::meta_frontend&,
+                 workers::service_pool&,
+                 backend::backend_pool);
 
         void
         start_accept();

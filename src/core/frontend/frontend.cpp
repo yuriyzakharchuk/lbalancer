@@ -1,25 +1,28 @@
 #include "frontend.hpp"
 
 
-lb::frontend::frontend::frontend(const std::string &accept_address,
-                                 const std::string &port,
-                                 workers::service_pool &service_pool,
-                                 lb::backend::backend_pool backend_pool,
-                                 lb::session::mode mode)
+lb::frontend::frontend::frontend(const lb::helpers::meta_frontend& meta_frontend,
+                                 lb::workers::service_pool& service_pool,
+                                 lb::backend::backend_pool backend_pool)
         : service_pool_(service_pool), acceptor_(service_pool.get_service()),
           backend_pool_(std::move(backend_pool)), session_(nullptr),
-          mode_(mode){
+          mode_(meta_frontend.mode) {
 
     using boost::asio::ip::tcp;
 
+    //tcp::resolver resolver(acceptor_.get_executor());
+    //tcp::resolver::query query(accept_address, port);
+    //tcp::endpoint endpoint { *resolver.resolve(query) };
+
     tcp::resolver resolver(acceptor_.get_executor());
-    tcp::resolver::query query(accept_address, port);
-    tcp::endpoint endpoint { *resolver.resolve(query) };
+    tcp::endpoint endpoint { *resolver.resolve(std::string_view(meta_frontend.address),
+                                               std::string_view(meta_frontend.port)) };
 
     acceptor_.open(endpoint.protocol());
     acceptor_.set_option(tcp::acceptor::reuse_address(true));
     acceptor_.bind(endpoint);
     acceptor_.listen();
+
 }
 
 
@@ -64,4 +67,5 @@ lb::frontend::frontend::handle_accept(const boost::system::error_code &error) {
     }
     start_accept();
 }
+
 

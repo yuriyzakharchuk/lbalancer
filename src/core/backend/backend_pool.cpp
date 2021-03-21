@@ -1,13 +1,19 @@
 #include "backend_pool.hpp"
 
 
-lb::backend::backend_pool::backend_pool(lb::backend::strategy,
-                                        const server_t & servers,
-                                        boost::asio::io_service &service) {
-    // TODO: correct creating pool
-    // TODO: strategy
-    for(auto &server : servers) {
-        pool_.emplace_back(server.first, server.second, service);
+lb::backend::backend_pool::backend_pool(lb::helpers::meta_backend& meta_backend)
+    : mode_(meta_backend.mode),
+      balance_(meta_backend.strategy),
+      pool_() {
+    pool_.reserve(meta_backend.pool.size());
+    for(auto& meta_server : meta_backend.pool) {
+        auto server = backend {
+            meta_server.address,
+            meta_server.port,
+            meta_server.weight,
+            meta_server.is_backup
+        };
+        pool_.push_back(server);
     }
 }
 
@@ -21,3 +27,4 @@ lb::backend::backend_pool::next_backend() {
     }
     return backend;
 }
+

@@ -6,8 +6,12 @@
 
 lb::backend::backend::backend(std::string server,
                               std::string port,
-                              boost::asio::io_service &service)
-        : server_(std::move(server)), port_(std::move(port)) {
+                              const unsigned int weight,
+                              const bool is_backup)
+    : server_(std::move(server)),
+      port_(std::move(port)),
+      weight_(weight),
+      is_backup_(is_backup) {
 }
 
 

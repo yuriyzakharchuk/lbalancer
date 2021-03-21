@@ -19,16 +19,14 @@ namespace lb {
         server(const server &) = delete;
         server& operator=(const server &) = delete;
 
-        void
-        run();
+        void run();
 
     private:
         workers::service_pool service_pool_;
         frontend_pool_t frontend_pool_;
         boost::asio::signal_set signals_; //TODO: signal handling
 
-        void
-        start_accept();
+        void start_accept();
     };
 } //lb
 

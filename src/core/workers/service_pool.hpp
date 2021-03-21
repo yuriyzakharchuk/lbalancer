@@ -11,16 +11,16 @@ namespace lb::workers {
 
     class service_pool {
     public:
+        using thread_pool_t  = std::vector<std::shared_ptr<std::thread>>;
         using service_pool_t = std::vector<std::shared_ptr<boost::asio::io_service>>;
-        using thread_pool_t = std::vector<std::shared_ptr<std::thread>>;
         using service_work_t = std::vector<std::shared_ptr<boost::asio::io_service::work>>;
 
         explicit service_pool(std::size_t pool_size);
 
-        service_pool(const service_pool &) = delete;
-
-        service_pool &
-        operator=(const service_pool &) = delete;
+        service_pool(service_pool&&) = delete;
+        service_pool(const service_pool&) = delete;
+        service_pool& operator=(service_pool&&) = delete;
+        service_pool& operator=(const service_pool&) = delete;
 
         void
         run_all();

@@ -6,23 +6,23 @@
 
 #include "backend.hpp"
 #include "strategy.hpp"
+#include "../session/mode.hpp"
+#include "../../helpers/meta/meta_backend.hpp"
 
 
 namespace lb::backend {
     class backend_pool {
     public:
-        using server_t = std::vector<std::pair<std::string, std::string>>;
+        explicit backend_pool(helpers::meta_backend&);
 
-        explicit backend_pool(strategy,
-                              const server_t &,
-                              boost::asio::io_service &);
-
-        lb::backend::backend &
-        next_backend();
+        backend& next_backend();
 
     private:
-        int current_backend_ = 0;
+        session::mode mode_;
+        strategy balance_;
         std::vector<backend> pool_;
+
+        int current_backend_ = 0;
     };
 }
 
