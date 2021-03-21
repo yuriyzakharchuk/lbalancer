@@ -5,29 +5,35 @@
 #include <string>
 #include <boost/asio.hpp>
 
-#include "../backend/backend_pool.hpp"
-#include "../workers/service_pool.hpp"
-
+#include "../session/mode.hpp"
 #include "../session/basic_session.hpp"
 #include "../session/tcp/tcp_session.hpp"
 #include "../session/http/http_session.hpp"
+#include "../session/ssl/ssl_session.hpp"
+
+#include "../backend/backend_pool.hpp"
+#include "../workers/service_pool.hpp"
 
 
 namespace lb::frontend {
     class frontend {
     public:
-        frontend(workers::service_pool &,
-                 boost::asio::ip::tcp::acceptor &,
-                 lb::backend::backend_pool);
+        frontend(const std::string &accept_address,
+                 const std::string &port,
+                 workers::service_pool &,
+                 lb::backend::backend_pool,
+                 lb::session::mode);
 
         void
         start_accept();
 
     private:
+        session::mode mode_;
+        backend::backend_pool backend_pool_;
+        boost::asio::ip::tcp::acceptor acceptor_;
+        std::shared_ptr<session::basic_session> session_;
+
         workers::service_pool &service_pool_;
-        boost::asio::ip::tcp::acceptor &acceptor_;
-        lb::backend::backend_pool backend_pool_;
-        std::shared_ptr<session::basic_session> new_session_;
 
         void
         handle_accept(const boost::system::error_code &);
