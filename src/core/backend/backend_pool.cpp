@@ -1,9 +1,8 @@
 #include "backend_pool.hpp"
 
 
-lb::backend::backend_pool::backend_pool(lb::helpers::meta_backend& meta_backend)
-    : mode_(meta_backend.mode),
-      balance_(meta_backend.strategy),
+lb::backend::backend_pool::backend_pool(const lb::helpers::meta_backend& meta_backend)
+    : balance_(meta_backend.strategy),
       pool_() {
     pool_.reserve(meta_backend.pool.size());
     for(auto& meta_server : meta_backend.pool) {

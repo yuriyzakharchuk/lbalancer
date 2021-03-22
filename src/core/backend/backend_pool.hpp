@@ -13,12 +13,11 @@
 namespace lb::backend {
     class backend_pool {
     public:
-        explicit backend_pool(helpers::meta_backend&);
+        explicit backend_pool(const helpers::meta_backend&);
 
         backend& next_backend();
 
     private:
-        session::mode mode_;
         strategy balance_;
         std::vector<backend> pool_;
 
