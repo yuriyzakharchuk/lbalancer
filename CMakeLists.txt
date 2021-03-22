@@ -26,7 +26,6 @@ SET(BOOST_LIBS ${Boost_SYSTEM_LIBRARY}
 
 ADD_EXECUTABLE(load_balancer
         src/main.cpp
-        src/core/server/server.cpp
         src/core/backend/backend_pool.cpp
         src/core/backend/backend.cpp
         src/core/session/tcp/tcp_session.cpp

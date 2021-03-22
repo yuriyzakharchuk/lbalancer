@@ -13,7 +13,6 @@ namespace lb::backend {
                          bool is_backup);
 
         std::string& server();
-
         std::string& port();
 
     private:

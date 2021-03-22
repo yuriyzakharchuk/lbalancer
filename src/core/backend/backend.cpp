@@ -15,14 +15,12 @@ lb::backend::backend::backend(std::string server,
 }
 
 
-std::string &
-lb::backend::backend::server() {
+std::string& lb::backend::backend::server() {
     return server_;
 }
 
 
-std::string &
-lb::backend::backend::port() {
+std::string& lb::backend::backend::port() {
     return port_;
 }
 

@@ -1,9 +1,15 @@
 #include "frontend.hpp"
 
+using namespace lb::frontend;
+using namespace lb::backend;
+using namespace lb::helpers;
+using namespace lb::workers;
+using namespace lb::session;
 
-lb::frontend::frontend::frontend(const lb::helpers::meta_frontend& meta_frontend,
-                                 lb::workers::service_pool::service_t& service,
-                                 lb::backend::backend_pool&& backend_pool)
+
+frontend::frontend(const meta_frontend& meta_frontend,
+                   service_pool::service_t& service,
+                   backend_pool&& backend_pool)
         : service_(service),
           acceptor_(boost::asio::make_strand(service)),
           backend_pool_(std::move(backend_pool)),
@@ -36,7 +42,7 @@ lb::frontend::frontend::frontend(const lb::helpers::meta_frontend& meta_frontend
 }
 
 
-void lb::frontend::frontend::start_accept() {
+void frontend::start_accept() {
     acceptor_.async_accept(boost::asio::make_strand(service_),
             beast::bind_front_handler(
                     &frontend::handle_accept,
@@ -44,27 +50,27 @@ void lb::frontend::frontend::start_accept() {
 }
 
 
-void lb::frontend::frontend::handle_accept(const boost::system::error_code &error,
+void frontend::handle_accept(const boost::system::error_code &error,
                                       boost::asio::ip::tcp::socket frontend_socket) {
     if (!error) {
         switch (mode_) {
-            case lb::session::mode::tcp: {
-                std::make_shared<lb::session::tcp_session>(
+            case mode::tcp: {
+                std::make_shared<tcp_session>(
                         service_,
                         std::move(frontend_socket),
                         backend_pool_.next_backend(),
                         8192)->start_session();
                 break;
             }
-            case lb::session::mode::http: {
-                std::make_shared<lb::session::http_session>(
+            case mode::http: {
+                std::make_shared<http_session>(
                         service_,
                         std::move(frontend_socket),
                         backend_pool_.next_backend())->start_session();
                 break;
             }
-            case lb::session::mode::ssl: {
-                std::make_shared<lb::session::ssl_session>(
+            case mode::ssl: {
+                std::make_shared<ssl_session>(
                         service_,
                         backend_pool_.next_backend())->start_session();
                 break;
