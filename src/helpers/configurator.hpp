@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <yaml-cpp/yaml.h>
+
 #include "../core/backend/strategy.hpp"
 #include "../core/frontend/frontend.hpp"
 #include "../core/backend/backend_pool.hpp"
@@ -21,7 +22,7 @@
 namespace lb::helpers {
     class configurator final {
     public:
-        using frontend_pool_t = std::vector<lb::frontend::frontend>;
+        using binding_t = std::vector<std::pair<meta_frontend, meta_backend>>;
 
         configurator(int argc, char **argv);
 
@@ -43,7 +44,8 @@ namespace lb::helpers {
         static constexpr char* default_config_path = "c:/lbalancer/lbalancer.conf";
 #endif
 
-        frontend_pool_t construct(workers::service_pool& service_pool);
+        // TODO: rename
+        binding_t construct();
 
         [[nodiscard]] unsigned int worker_count() const noexcept;
 

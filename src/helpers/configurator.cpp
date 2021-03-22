@@ -39,7 +39,7 @@ configurator::configurator(int argc, char **argv) {
     }
     catch (const std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -74,24 +74,24 @@ configurator::info_log() const noexcept {
 }
 
 
-configurator::frontend_pool_t
-configurator::construct(workers::service_pool& service_pool) {
-    frontend_pool_t frontend_pool {};
-    frontend_pool.reserve(meta_frontend_pool_.size());
+configurator::binding_t
+configurator::construct() {
+    binding_t pool {};
+    pool.reserve(meta_frontend_pool_.size());
 
     for(auto& meta_frontend : meta_frontend_pool_) {
         // creating backend pool for current meta frontend
         auto it = std::find_if(meta_backend_pool_.begin(), meta_backend_pool_.end(),
                                [&meta_frontend](const meta_backend& m) { return m.name == meta_frontend.backend; });
         if(it == meta_backend_pool_.end()) {
-            std::exit(1);
+            std::exit(EXIT_FAILURE);
         }
-        backend::backend_pool backend_pool { *it };
+        helpers::meta_backend meta_backend { *it };
 
         // creating frontend
-        frontend_pool.emplace_back(meta_frontend, service_pool, backend_pool);
+        pool.emplace_back(meta_frontend, meta_backend);
     }
-    return frontend_pool;
+    return pool;
 }
 
 
@@ -112,13 +112,13 @@ configurator::parse_worker_count(YAML::Node& global) {
             }
             catch (const std::exception& e) {
                 std::cerr << e.what() << std::endl;
-                std::exit(1);
+                std::exit(EXIT_FAILURE);
             }
         }
     }
     else {
         std::cout << "Config: no worker_process parameter found." << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -170,7 +170,6 @@ configurator::parse_backends(YAML::Node& node) {
         meta_backend_pool_.emplace_back(meta_backend {
                 key.as<std::string>(),
                 parse_balance(value),
-                parse_mode(value),
                 parse_servers(value)
         });
     }
@@ -203,7 +202,7 @@ configurator::parse_port(YAML::Node& node) {
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -220,7 +219,7 @@ configurator::parse_address(YAML::Node& node) {
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -246,7 +245,7 @@ configurator::parse_mode(YAML::Node &node) {
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -264,7 +263,7 @@ configurator::parse_balance(YAML::Node& node) {
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -281,7 +280,7 @@ configurator::parse_backend(YAML::Node& node) {
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -319,7 +318,7 @@ configurator::parse_weight(YAML::Node& node) {
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
