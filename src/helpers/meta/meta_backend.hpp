@@ -15,7 +15,6 @@ namespace lb::helpers {
     struct meta_backend {
         std::string               name {};
         backend::strategy         strategy {};
-        session::mode             mode {};
         std::vector<meta_server>  pool {};
     };
 
