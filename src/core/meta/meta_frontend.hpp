@@ -6,7 +6,7 @@
 #define LOAD_BALANCER_META_FRONTEND_HPP
 
 #include <string>
-#include "../../core/session/mode.hpp"
+#include "../session/mode.hpp"
 
 namespace lb::helpers {
     struct meta_frontend {

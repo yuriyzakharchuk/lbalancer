@@ -7,8 +7,8 @@
 
 #include <vector>
 #include "meta_server.hpp"
-#include "../../core/session/mode.hpp"
-#include "../../core/backend/strategy.hpp"
+#include "../session/mode.hpp"
+#include "../backend/strategy.hpp"
 
 
 namespace lb::helpers {

@@ -14,9 +14,9 @@
 #include "../core/backend/backend_pool.hpp"
 #include "../core/workers/service_pool.hpp"
 
-#include "meta/meta_server.hpp"
-#include "meta/meta_backend.hpp"
-#include "meta/meta_frontend.hpp"
+#include "../core/meta/meta_server.hpp"
+#include "../core/meta/meta_backend.hpp"
+#include "../core/meta/meta_frontend.hpp"
 
 
 namespace lb::helpers {
