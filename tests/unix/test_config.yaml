@@ -1,0 +1,25 @@
+global:
+  worker_process: auto
+  default_ssl_certificate: /home/yuriy/certs/crt.crt
+  default_ssl_private_key: /home/yuriy/certs/key.key
+
+
+frontends:
+  fr_1:
+    address: 0.0.0.0
+    port: 5000
+    mode: https
+    backend: b_1
+
+
+backends:
+  b_1:
+    balance: roundrobin
+    servers:
+      s_1:
+        address: github.com
+        port: 443
+      s_2:
+        address: youtube.com
+        port: 443
+
