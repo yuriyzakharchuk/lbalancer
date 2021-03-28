@@ -7,7 +7,7 @@
 #include "backend.hpp"
 #include "strategy.hpp"
 #include "../session/mode.hpp"
-#include "../../helpers/meta/meta_backend.hpp"
+#include "../meta/meta_backend.hpp"
 
 
 namespace lb::backend {
@@ -18,7 +18,7 @@ namespace lb::backend {
         backend& next_backend();
 
     private:
-        strategy balance_;
+        const strategy balance_;
         std::vector<backend> pool_;
 
         int current_backend_ = 0;

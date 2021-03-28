@@ -3,13 +3,11 @@
 using namespace lb::session;
 
 
-tcp_session::tcp_session(boost::asio::io_service& service,
-                         socket_t&& frontend_socket,
+tcp_session::tcp_session(socket_t&& frontend_socket,
                          backend_t& backend,
                          std::size_t buffer_len)
     : frontend_socket_(std::move(frontend_socket)),
-      backend_socket_(service),
-      service_(service),
+      backend_socket_(frontend_socket_.get_executor()),
       backend_(backend),
       fb_buffer_(),
       bf_buffer_(),
@@ -25,7 +23,7 @@ void tcp_session::start_session() {
         if(!error) {
             if(bytes_transferred > 0) {
                c->fb_buffer_.commit(bytes_transferred);
-               resolver_t resolver(c->service_);
+               resolver_t resolver(c->backend_socket_.get_executor());
                auto endpoints {
                    resolver.resolve(c->backend_.server(), c->backend_.port())
                };

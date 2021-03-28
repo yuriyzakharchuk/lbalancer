@@ -18,6 +18,8 @@ configurator::configurator(int argc, char **argv) {
             parse_error_log(global);
             parse_info_log(global);
             parse_use_ipc(global);
+            parse_ssl_certificate(global);
+            parse_ssl_private_key(global);
         }
         else {
             throw std::runtime_error("Config: global section not found");
@@ -44,38 +46,8 @@ configurator::configurator(int argc, char **argv) {
 }
 
 
-unsigned int
-configurator::worker_count() const noexcept {
-    return worker_count_;
-}
 
-
-bool
-configurator::use_ipc() const noexcept {
-    return ipc_;
-}
-
-
-bool
-configurator::use_threads() const noexcept {
-    return !use_ipc();
-}
-
-
-std::string
-configurator::error_log() const noexcept {
-    return error_log_;
-}
-
-
-std::string
-configurator::info_log() const noexcept {
-    return info_log_;
-}
-
-
-configurator::binding_t
-configurator::construct() {
+configurator::binding_t configurator::construct() {
     binding_t pool {};
     pool.reserve(meta_frontend_pool_.size());
 
@@ -95,8 +67,7 @@ configurator::construct() {
 }
 
 
-void
-configurator::parse_worker_count(YAML::Node& global) {
+void configurator::parse_worker_count(YAML::Node& global) {
     if(auto node = global["worker_process"]) {
         auto workers = node.as<std::string>();
         if (workers == "auto") {
@@ -123,8 +94,7 @@ configurator::parse_worker_count(YAML::Node& global) {
 }
 
 
-void
-configurator::parse_error_log(YAML::Node& global) {
+void configurator::parse_error_log(YAML::Node& global) {
     if(auto node = global["error_log"]) {
         auto path = node.as<std::string>();
         // TODO: validate path
@@ -137,8 +107,7 @@ configurator::parse_error_log(YAML::Node& global) {
 }
 
 
-void
-configurator::parse_info_log(YAML::Node& global) {
+void configurator::parse_info_log(YAML::Node& global) {
     if(auto node = global["info_log"]) {
         auto path = node.as<std::string>();
         // TODO: validate path
@@ -151,8 +120,7 @@ configurator::parse_info_log(YAML::Node& global) {
 }
 
 
-void
-configurator::parse_use_ipc(YAML::Node& global) {
+void configurator::parse_use_ipc(YAML::Node& global) {
     if (global["use_ipc"]) {
         ipc_ = global["use_ipc"].as<bool>();
     }
@@ -162,8 +130,7 @@ configurator::parse_use_ipc(YAML::Node& global) {
 }
 
 
-void
-configurator::parse_backends(YAML::Node& node) {
+void configurator::parse_backends(YAML::Node& node) {
     for(YAML::iterator it = node.begin(); it != node.end(); ++it) {
         auto key { it->first };
         auto value { it->second };
@@ -176,8 +143,7 @@ configurator::parse_backends(YAML::Node& node) {
 }
 
 
-void
-configurator::parse_frontends(YAML::Node& frontends) {
+void configurator::parse_frontends(YAML::Node& frontends) {
     for(YAML::iterator it = frontends.begin(); it != frontends.end(); ++it) {
         meta_frontend_pool_.emplace_back(meta_frontend {
                 it->first.as<std::string>(),
@@ -190,8 +156,7 @@ configurator::parse_frontends(YAML::Node& frontends) {
 }
 
 
-std::string
-configurator::parse_port(YAML::Node& node) {
+std::string configurator::parse_port(YAML::Node& node) {
     try{
         if (auto value = node["port"]) {
             return value.as<std::string>();
@@ -207,8 +172,7 @@ configurator::parse_port(YAML::Node& node) {
 }
 
 
-std::string
-configurator::parse_address(YAML::Node& node) {
+std::string configurator::parse_address(YAML::Node& node) {
     try{
         if (auto value = node["address"]) {
             return value.as<std::string>();
@@ -224,15 +188,14 @@ configurator::parse_address(YAML::Node& node) {
 }
 
 
-lb::session::mode
-configurator::parse_mode(YAML::Node &node) {
+lb::session::mode configurator::parse_mode(YAML::Node &node) {
     try{
         if (auto value = node["mode"]) {
             auto mode = value.as<std::string>();
             if (mode == "http") {
                 return lb::session::mode::http;
             }
-            else if (mode == "ssl") {
+            else if (mode == "https") {
                 return lb::session::mode::ssl;
             }
             else {
@@ -250,8 +213,7 @@ configurator::parse_mode(YAML::Node &node) {
 }
 
 
-lb::backend::strategy
-configurator::parse_balance(YAML::Node& node) {
+lb::backend::strategy configurator::parse_balance(YAML::Node& node) {
     try {
         if (auto value = node["balance"]) {
             auto mode = value.as<std::string>();
@@ -268,8 +230,7 @@ configurator::parse_balance(YAML::Node& node) {
 }
 
 
-std::string
-configurator::parse_backend(YAML::Node& node) {
+std::string configurator::parse_backend(YAML::Node& node) {
     try{
         if (auto value = node["backend"]) {
             return value.as<std::string>();
@@ -285,8 +246,7 @@ configurator::parse_backend(YAML::Node& node) {
 }
 
 
-meta_server_pool
-configurator::parse_servers(YAML::Node& node) {
+meta_server_pool configurator::parse_servers(YAML::Node& node) {
     meta_server_pool servers {};
     servers.reserve(node.size());
 
@@ -306,8 +266,7 @@ configurator::parse_servers(YAML::Node& node) {
 }
 
 
-unsigned int
-configurator::parse_weight(YAML::Node& node) {
+unsigned int configurator::parse_weight(YAML::Node& node) {
     try{
         if (auto value = node["weight"]) {
             return value.as<unsigned int>();
@@ -323,8 +282,7 @@ configurator::parse_weight(YAML::Node& node) {
 }
 
 
-bool
-configurator::parse_is_backup(YAML::Node& node) {
+bool configurator::parse_is_backup(YAML::Node& node) {
     if (node["is_backup"]) {
         return node["is_backup"].as<bool>();
     }
@@ -333,3 +291,49 @@ configurator::parse_is_backup(YAML::Node& node) {
     }
 }
 
+
+
+void
+configurator::parse_ssl_certificate(YAML::Node& node) {
+    try {
+        if (auto value = node["default_ssl_certificate"]) {
+            default_ssl_certificate_ = value.as<std::string>();
+        }
+    }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+
+
+void
+configurator::parse_ssl_private_key(YAML::Node& node) {
+    try {
+        if (auto value = node["default_ssl_private_key"]) {
+            default_ssl_private_key_ = value.as<std::string>();
+        }
+    }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+
+
+[[maybe_unused]] std::string
+configurator::parse_ssl_tmp_dh(YAML::Node& node) {
+    std::string path;
+    try {
+        if (auto value = node["ssl_diffie_hellman_params"]) {
+            path = value.as<std::string>();
+        }
+        return path;
+    }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+}

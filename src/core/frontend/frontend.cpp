@@ -9,8 +9,12 @@ using namespace lb::session;
 
 frontend::frontend(const meta_frontend& meta_frontend,
                    service_pool::service_t& service,
+                   boost::asio::ssl::context& frontend_context,
+                   boost::asio::ssl::context& backend_context,
                    backend_pool&& backend_pool)
         : service_(service),
+          frontend_context_(frontend_context),
+          backend_context_(backend_context),
           acceptor_(boost::asio::make_strand(service)),
           backend_pool_(std::move(backend_pool)),
           mode_(meta_frontend.mode) {
@@ -35,6 +39,7 @@ frontend::frontend(const meta_frontend& meta_frontend,
     if(error_code) {
 
     }
+    // TODO: read max connections parameter from config file
     acceptor_.listen(boost::asio::socket_base::max_listen_connections, error_code);
     if(error_code) {
 
@@ -50,28 +55,29 @@ void frontend::start_accept() {
 }
 
 
-void frontend::handle_accept(const boost::system::error_code &error,
-                                      boost::asio::ip::tcp::socket frontend_socket) {
+void frontend::handle_accept(const boost::system::error_code &error, socket_t frontend_socket) {
     if (!error) {
         switch (mode_) {
             case mode::tcp: {
                 std::make_shared<tcp_session>(
-                        service_,
                         std::move(frontend_socket),
                         backend_pool_.next_backend(),
-                        8192)->start_session();
+                        8192)->start_session(); // TODO: read this from config
                 break;
             }
             case mode::http: {
                 std::make_shared<http_session>(
-                        service_,
                         std::move(frontend_socket),
                         backend_pool_.next_backend())->start_session();
                 break;
             }
             case mode::ssl: {
+                // TODO: add support tls v1.1 -v1.2 -v1.3
                 std::make_shared<ssl_session>(
-                        service_,
+                        std::move(boost::asio::make_strand(service_)),
+                        frontend_context_,
+                        backend_context_,
+                        std::move(frontend_socket),
                         backend_pool_.next_backend())->start_session();
                 break;
             }

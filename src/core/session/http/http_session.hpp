@@ -15,16 +15,14 @@ namespace lb::session {
     public:
         using socket_t      = boost::asio::ip::tcp::socket;
         using resolver_t    = boost::asio::ip::tcp::resolver;
-        using service_t     = boost::asio::io_service;
         using backend_t     = backend::backend;
 
-        explicit http_session(service_t &, socket_t&&, backend_t &);
+        explicit http_session(socket_t&&, backend_t &);
 
         void start_session();
 
 
     private:
-        service_t &service_;
         backend_t &backend_;
 
 
@@ -39,7 +37,7 @@ namespace lb::session {
         beast::tcp_stream backend_stream_;
         beast::flat_buffer backend_buffer_;
         // balancer --> backend
-        http::request<http::empty_body> backend_request_;
+        http::request<http::string_body> backend_request_;
         // balancer <-- backend
         http::response<http::string_body> backend_response_;
 

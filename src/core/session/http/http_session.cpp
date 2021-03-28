@@ -6,18 +6,16 @@
 using namespace lb::session;
 
 
-http_session::http_session(boost::asio::io_service &service,
-                           socket_t&& frontend_socket,
+http_session::http_session(socket_t&& frontend_socket,
                            backend_t &backend)
-    : service_(service),
-      backend_(backend),
+    : backend_(backend),
       frontend_stream_(std::move(frontend_socket)),
-      backend_stream_(service) {
+      backend_stream_(frontend_stream_.get_executor()) {
 }
 
 
 void http_session::start_session() {
-    resolver_t resolver(service_);
+    resolver_t resolver(backend_stream_.get_executor());
     auto endpoints {
             resolver.resolve(backend_.server(), backend_.port())
     };
@@ -35,7 +33,7 @@ void http_session::start_session() {
 
 void http_session::frontend_read() {
     frontend_request_ = {};
-    //frontend_stream_.expires_after(std::chrono::seconds(30));
+    frontend_stream_.expires_after(std::chrono::seconds(30));
     http::async_read(frontend_stream_, frontend_buffer_, frontend_request_,
                      beast::bind_front_handler(
                              &http_session::frontend_on_read,
@@ -43,13 +41,12 @@ void http_session::frontend_read() {
 }
 
 
+
 void http_session::frontend_write() {
-    http::async_write(frontend_stream_,
-                      frontend_response_,
-                      beast::bind_front_handler(
-                              &http_session::frontend_on_write,
-                              shared_from_this()));
+    http::async_write(frontend_stream_, frontend_response_,beast::bind_front_handler(
+            &http_session::frontend_on_write,shared_from_this()));
 }
+
 
 
 void http_session::frontend_on_read(beast::error_code ec,
@@ -81,7 +78,8 @@ void http_session::frontend_on_write(beast::error_code ec,
 void
 http_session::handle_frontend_request(http::request<http::string_body> &&request) {
     // TODO: handle request and set up backend_request_
-    backend_request_ = {};
+    backend_request_ = request;
+    //backend_request_.set(http::field::host, BOOST_BEAST_VERSION_STRING);
     backend_write();
 }
 
@@ -148,7 +146,7 @@ void http_session::backend_close() {
 void
 http_session::handle_backend_response(http::response<http::string_body> &&response) {
     // TODO: handle response and set up frontend_response_
-    frontend_response_ = {};
+    frontend_response_ = response;
     frontend_write();
 }
 

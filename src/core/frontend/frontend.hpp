@@ -12,7 +12,7 @@
 
 #include "../backend/backend_pool.hpp"
 #include "../workers/service_pool.hpp"
-#include "../../helpers/meta/meta_frontend.hpp"
+#include "../meta/meta_frontend.hpp"
 
 
 namespace lb::frontend {
@@ -22,16 +22,19 @@ namespace lb::frontend {
 
         frontend(const helpers::meta_frontend&,
                  workers::service_pool::service_t &,
+                 boost::asio::ssl::context&,
+                 boost::asio::ssl::context&,
                  backend::backend_pool&&);
 
-        void
-        start_accept();
+        void start_accept();
 
     private:
         session::mode mode_;
         backend::backend_pool backend_pool_;
         boost::asio::ip::tcp::acceptor acceptor_;
         workers::service_pool::service_t &service_;
+        boost::asio::ssl::context& frontend_context_;
+        boost::asio::ssl::context& backend_context_;
 
         void handle_accept(const boost::system::error_code&, socket_t socket);
     };
