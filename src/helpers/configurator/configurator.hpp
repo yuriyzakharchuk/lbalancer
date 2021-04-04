@@ -39,8 +39,7 @@ namespace lb::helpers {
 #if defined(__linux__)
         static constexpr const char* default_config_path = "/etc/lbalancer/lbalancer.conf";
 #elif defined(_WIN64)
-        // TODO: where store windows config
-        static constexpr char* default_config_path = "c:/lbalancer/lbalancer.conf";
+        static constexpr const char* default_config_path = "с:\\lbalancer\\lbalancer.conf";
 #endif
 
         // TODO: rename
