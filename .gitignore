@@ -9,6 +9,11 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+lbalancer.cbp
+
+lbalancer_cli
+lbalancer_test
 
 cmake-build-debug/
 .idea/
+out/
