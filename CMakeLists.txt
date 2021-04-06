@@ -2,44 +2,41 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 PROJECT(lbalancer VERSION 0.1 LANGUAGES CXX)
 
 SET(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_C_COMPILER clang)
+ADD_COMPILE_OPTIONS(
+        -Werror
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wcast-align
+        -Wcast-qual
+        -Wconversion
+        -Wctor-dtor-privacy
+        -Wenum-compare
+        -Wfloat-equal
+        -Wnon-virtual-dtor
+        -Wold-style-cast
+        -Woverloaded-virtual
+        -Wredundant-decls
+        -Wsign-conversion
+        -Wsign-promo
+)
 
-# certify header only library
-# ADD_DEFINITIONS(-DBUILD_TESTING=OFF)
-# ADD_SUBDIRECTORY(include/certify)
 
 INCLUDE_DIRECTORIES(third_party/certify/include)
 
-# PThread library
-SET(THREADS_PREFER_PTHREAD_FLAG ON)
-FIND_PACKAGE(Threads REQUIRED)
 FIND_PACKAGE(yaml-cpp REQUIRED)
 FIND_PACKAGE(OpenSSL REQUIRED)
+FIND_PACKAGE(Boost 1.71 REQUIRED COMPONENTS system thread log)
 
-# Boost libraries (Boost.Asio, Boost.Log)
 SET(Boost_USE_STATIC_LIBS OFF)
 SET(Boost_USE_MULTITHREAD ON)
-FIND_PACKAGE(Boost 1.71 REQUIRED COMPONENTS
-        system
-        thread
-        log
-        log_setup
-        date_time
-        filesystem)
-
-if (Boost_FOUND)
-    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-    LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-endif (Boost_FOUND)
-
 SET(BOOST_LIBS ${Boost_SYSTEM_LIBRARY}
-               ${Boost_THREAD_LIBRARY}
-               ${Boost_REGEX_LIBRARY}
                ${Boost_LOG_LIBRARY})
 
 
-# add_definitions(-DBOOST_ASIO_ENABLE_HANDLER_TRACKING)
-
-ADD_EXECUTABLE(lbalancer
+ADD_EXECUTABLE(lbalancer_cli
         src/main.cpp
         src/core/backend/backend_pool.cpp
         src/core/backend/backend.cpp
@@ -53,8 +50,4 @@ ADD_EXECUTABLE(lbalancer
         src/helpers/logger/basic_logger.cpp
         src/core/session/ssl/ssl_session.cpp)
 
-target_link_libraries(lbalancer PRIVATE
-        ${BOOST_LIBS}
-        Threads::Threads
-        yaml-cpp
-        OpenSSL::SSL)
+TARGET_LINK_LIBRARIES(lbalancer_cli PRIVATE ${BOOST_LIBS} yaml-cpp OpenSSL::SSL)
