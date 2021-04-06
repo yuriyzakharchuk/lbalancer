@@ -2,8 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 PROJECT(lbalancer VERSION 0.1 LANGUAGES CXX)
 
 SET(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_C_COMPILER clang)
+SET(CMAKE_CXX_COMPILER clang++)
+SET(CMAKE_C_COMPILER clang)
 ADD_COMPILE_OPTIONS(
         -Werror
         -Wall
@@ -22,6 +22,9 @@ ADD_COMPILE_OPTIONS(
         -Wsign-conversion
         -Wsign-promo
 )
+if(NOT CMAKE_CXX_EXTENSIONS)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
 
 
 INCLUDE_DIRECTORIES(third_party/certify/include)
