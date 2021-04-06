@@ -22,9 +22,9 @@ ADD_COMPILE_OPTIONS(
         -Wsign-conversion
         -Wsign-promo
 )
-if(NOT CMAKE_CXX_EXTENSIONS)
-    set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
+IF (NOT CMAKE_CXX_EXTENSIONS)
+    SET(CMAKE_CXX_EXTENSIONS OFF)
+ENDIF ()
 
 
 INCLUDE_DIRECTORIES(third_party/certify/include)
@@ -36,7 +36,7 @@ FIND_PACKAGE(Boost 1.71 REQUIRED COMPONENTS system thread log)
 SET(Boost_USE_STATIC_LIBS OFF)
 SET(Boost_USE_MULTITHREAD ON)
 SET(BOOST_LIBS ${Boost_SYSTEM_LIBRARY}
-               ${Boost_LOG_LIBRARY})
+        ${Boost_LOG_LIBRARY})
 
 
 ADD_EXECUTABLE(lbalancer_cli

@@ -2,44 +2,42 @@
 #define LOAD_BALANCER_TCP_SESSION_HPP
 
 #include <boost/asio.hpp>
+
 #include "../../backend/backend.hpp"
 
-
 namespace lb::session {
-    class tcp_session : public std::enable_shared_from_this<tcp_session> {
-    public:
-        using socket_t      = boost::asio::ip::tcp::socket;
-        using resolver_t    = boost::asio::ip::tcp::resolver;
-        using buffer_t      = boost::asio::streambuf;
-        using backend_t     = backend::backend;
-        using bufflen_t     = std::size_t;
+class tcp_session : public std::enable_shared_from_this<tcp_session> {
+   public:
+    using socket_t = boost::asio::ip::tcp::socket;
+    using resolver_t = boost::asio::ip::tcp::resolver;
+    using buffer_t = boost::asio::streambuf;
+    using backend_t = backend::backend;
+    using bufflen_t = std::size_t;
 
+    explicit tcp_session(socket_t&&, backend_t&, bufflen_t);
 
-        explicit  tcp_session(socket_t&&, backend_t &, bufflen_t);
+    tcp_session(tcp_session&&) = delete;
+    tcp_session(const tcp_session&) = delete;
+    tcp_session& operator=(tcp_session&&) = delete;
+    tcp_session& operator=(const tcp_session&) = delete;
 
-        tcp_session(tcp_session&&) = delete;
-        tcp_session(const tcp_session&) = delete;
-        tcp_session& operator=(tcp_session&&) = delete;
-        tcp_session& operator=(const tcp_session&) = delete;
+    void start_session();
 
-        void start_session();
+   private:
+    socket_t frontend_socket_;
+    socket_t backend_socket_;
 
-    private:
-        socket_t frontend_socket_;
-        socket_t backend_socket_;
+    backend_t& backend_;
 
-        backend_t &backend_;
+    buffer_t fb_buffer_;
+    buffer_t bf_buffer_;
+    bufflen_t buffer_len_;
 
-        buffer_t fb_buffer_;
-        buffer_t bf_buffer_;
-        bufflen_t buffer_len_;
+    void frontend_read();
+    void frontend_write();
+    void backend_read();
+    void backend_write();
+};
+}  // namespace lb::session
 
-        void frontend_read();
-        void frontend_write();
-        void backend_read();
-        void backend_write();
-    };
-}
-
-
-#endif //LOAD_BALANCER_TCP_SESSION_HPP
+#endif  // LOAD_BALANCER_TCP_SESSION_HPP

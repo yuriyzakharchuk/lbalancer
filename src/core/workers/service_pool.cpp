@@ -1,26 +1,23 @@
+#include "service_pool.hpp"
+
 #include <stdexcept>
 #include <thread>
 #include <utility>
 
-#include "service_pool.hpp"
-
-
 lb::workers::service_pool::service_pool(std::size_t pool_size)
-        : next_service_(0) {
+    : next_service_(0), pool_(), thread_pool_(), work_() {
     if (pool_size == 0) {
         throw std::runtime_error("Service pool can't be empty.");
     }
     for (std::size_t i = 0; i < pool_size; ++i) {
-        std::shared_ptr<service_t> service {new service_t () };
-        std::shared_ptr<service_t ::work> work {new service_t::work(*service) };
+        std::shared_ptr<service_t> service{new service_t()};
+        std::shared_ptr<service_t ::work> work{new service_t::work(*service)};
         pool_.push_back(service);
         work_.push_back(work);
     }
 }
 
-
-void
-lb::workers::service_pool::run_all() {
+void lb::workers::service_pool::run_all() {
     for (auto &service : pool_) {
         thread_pool_.push_back(std::make_shared<std::thread>([&service]() {
             service->run();
@@ -32,14 +29,11 @@ lb::workers::service_pool::run_all() {
     }
 }
 
-
-boost::asio::io_service &
-lb::workers::service_pool::service() {
-    boost::asio::io_service &s = { *pool_.at(next_service_) };
+boost::asio::io_service &lb::workers::service_pool::service() {
+    boost::asio::io_service &s = {*pool_.at(next_service_)};
     ++next_service_;
     if (next_service_ == pool_.size()) {
         next_service_ = 0;
     }
     return s;
 }
-

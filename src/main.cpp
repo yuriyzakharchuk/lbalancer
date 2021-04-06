@@ -1,8 +1,7 @@
-#include "os/unix/unix.hpp"
-#include "helpers/logger/logger.hpp"
-#include "helpers/configurator/configurator.hpp"
 #include "core/server/server.hpp"
-
+#include "helpers/configurator/configurator.hpp"
+#include "helpers/logger/logger.hpp"
+#include "os/unix/unix.hpp"
 
 int main(int argc, char *argv[]) {
     lb::helpers::configurator configurator(argc, argv);
@@ -16,7 +15,7 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-    lb::server server { configurator };
+    lb::server server{configurator};
     server.run();
     return EXIT_SUCCESS;
 }
