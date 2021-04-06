@@ -9,6 +9,8 @@ using namespace lb::helpers;
 
 configurator::configurator(int argc, char **argv) {
     // TODO: parse args
+    (void)argv;
+    (void)argc;
 
     try {
         YAML::Node config = YAML::LoadFile(default_config_path);

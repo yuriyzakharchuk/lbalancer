@@ -33,15 +33,15 @@ lb::console_write(const std::string& message) {
 
 void
 lb::log_error(const std::string &message) {
-
+    (void)message;
 }
 
 void
 lb::log_info(const std::string &message) {
-
+    (void)message;
 }
 
 void
 lb::log_trace(const std::string &message) {
-
+    (void)message;
 }

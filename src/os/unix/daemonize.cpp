@@ -15,7 +15,7 @@ extern "C" {
 #include <iostream>
 
 namespace {
-    bool
+    [[maybe_unused]] bool
     already_opened() {
         return false;
     }

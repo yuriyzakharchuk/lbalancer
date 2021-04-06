@@ -10,8 +10,8 @@ ssl_session::ssl_session(boost::asio::executor&& executor,
                          ssl_context_t& backend_ssl_context,
                          socket_t&& frontend_socket,
                          backend_t &backend)
-        : resolver_(executor),
-          backend_(backend),
+        : backend_(backend),
+          resolver_(executor),
           frontend_stream_(std::move(frontend_socket), frontend_ssl_context),
           backend_stream_(executor, backend_ssl_context) {
 }

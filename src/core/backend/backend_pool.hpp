@@ -18,10 +18,10 @@ namespace lb::backend {
         backend& next_backend();
 
     private:
-        const strategy balance_;
+        [[maybe_unused]] const strategy balance_;
         std::vector<backend> pool_;
 
-        int current_backend_ = 0;
+        std::size_t current_backend_ = 0;
     };
 }
 

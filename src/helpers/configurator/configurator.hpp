@@ -30,9 +30,9 @@ namespace lb::helpers {
         configurator& operator=(configurator&&) = delete;
         configurator& operator=(const configurator&) = delete;
 
-        static inline auto
+        static inline int
         cpu_count() noexcept {
-            return std::thread::hardware_concurrency();
+            return static_cast<int>(std::thread::hardware_concurrency());
         }
 
 
@@ -57,7 +57,7 @@ namespace lb::helpers {
         }
 
 
-        [[nodiscard]] unsigned int
+        [[nodiscard]] int
         worker_count() const noexcept {
             return worker_count_;
         }
@@ -67,13 +67,13 @@ namespace lb::helpers {
             return ipc_;
         }
 
-        [[nodiscard]] inline bool
+        [[maybe_unused]] [[nodiscard]] inline bool
         use_threads() const noexcept {
             return !use_ipc();
         }
 
 
-        [[nodiscard]] inline std::string
+        [[maybe_unused]] [[nodiscard]] inline std::string
         error_log() const noexcept {
             return error_log_;
         }
@@ -85,7 +85,7 @@ namespace lb::helpers {
 
 
     private:
-        unsigned int worker_count_ {};
+        int worker_count_ {};
         std::string  error_log_ {};
         std::string  info_log_ {};
         std::string  default_ssl_certificate_ {};

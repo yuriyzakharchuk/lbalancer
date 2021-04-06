@@ -28,7 +28,10 @@ void tcp_session::start_session() {
                    resolver.resolve(c->backend_.server(), c->backend_.port())
                };
                boost::asio::async_connect(c->backend_socket_, endpoints,
-                                          [cn = c->shared_from_this()](auto &&error, auto &&endpoint) {
+                                          [cn = c->shared_from_this()](auto &&error, auto &&) {
+                                              if(error) {
+                                                 return;
+                                              }
                                               cn->backend_write();
                                           });
             }

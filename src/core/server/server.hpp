@@ -19,7 +19,7 @@ namespace lb {
 
         explicit
         server(helpers::configurator& configurator)
-            : service_pool_(configurator.worker_count()),
+            : service_pool_(static_cast<size_t>(configurator.worker_count())),
               frontend_ssl_context_(boost::asio::ssl::context::tls_server),
               backend_ssl_context_(boost::asio::ssl::context::tls_client),
               signals_(service_pool_.service()) {
@@ -42,7 +42,7 @@ namespace lb {
                                                      service_pool_.service(),
                                                      frontend_ssl_context_,
                                                      backend_ssl_context_,
-                                                     std::move(backend::backend_pool(binding.second)))->start_accept();
+                                                     backend::backend_pool(binding.second))->start_accept();
             }
         }
 
@@ -54,7 +54,7 @@ namespace lb {
         workers::service_pool service_pool_;
         boost::asio::ssl::context frontend_ssl_context_;
         boost::asio::ssl::context backend_ssl_context_;
-        boost::asio::signal_set signals_; //TODO: signal handling
+        [[maybe_unused]] boost::asio::signal_set signals_; //TODO: signal handling
     };
 } //lb
 

@@ -18,8 +18,8 @@ namespace lb::backend {
     private:
         std::string  server_;
         std::string  port_;
-        unsigned int weight_;
-        bool         is_backup_;
+        [[maybe_unused]] unsigned int weight_;
+        [[maybe_unused]] bool         is_backup_;
     };
 } //lb::backend
 
