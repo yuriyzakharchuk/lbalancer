@@ -3,9 +3,12 @@ PROJECT(lbalancer VERSION 0.1 LANGUAGES CXX)
 
 SET(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_CXX_COMPILER clang++)
-SET(CMAKE_C_COMPILER clang)
+
 ADD_COMPILE_OPTIONS(
-        -Werror
+        -std=c++17      # Default compiler C++ standard - 17
+        -O2             # Optimization level 2
+
+        -Werror         # Max level of warning/error informing
         -Wall
         -Wextra
         -Wpedantic
@@ -22,6 +25,8 @@ ADD_COMPILE_OPTIONS(
         -Wsign-conversion
         -Wsign-promo
 )
+
+# Using standard-only C++ features
 IF (NOT CMAKE_CXX_EXTENSIONS)
     SET(CMAKE_CXX_EXTENSIONS OFF)
 ENDIF ()
