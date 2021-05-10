@@ -11,11 +11,6 @@ namespace lb::workers {
 class service_pool {
    public:
     using service_t = boost::asio::io_context;
-    using thread_pool_t = std::vector<std::shared_ptr<std::thread>>;
-    using service_pool_t =
-        std::vector<std::shared_ptr<boost::asio::io_context>>;
-    using service_work_t =
-        std::vector<std::shared_ptr<boost::asio::io_context::work>>;
 
     explicit service_pool(std::size_t pool_size);
 
@@ -26,14 +21,13 @@ class service_pool {
 
     void run_all();
 
-    service_t& service();
+    inline service_t& service() {
+        return io_service_;
+    }
 
    private:
-    std::size_t next_service_;
-
-    service_pool_t pool_;
-    thread_pool_t thread_pool_;
-    service_work_t work_;
+    std::size_t pool_size_;
+    service_t io_service_;
 };
 
 }  // namespace lb::workers

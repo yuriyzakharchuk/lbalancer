@@ -2,38 +2,24 @@
 
 #include <stdexcept>
 #include <thread>
+#include <boost/bind.hpp>
 #include <utility>
 
-lb::workers::service_pool::service_pool(std::size_t pool_size)
-    : next_service_(0), pool_(), thread_pool_(), work_() {
-    if (pool_size == 0) {
-        throw std::runtime_error("Service pool can't be empty.");
-    }
-    for (std::size_t i = 0; i < pool_size; ++i) {
-        std::shared_ptr<service_t> service{new service_t()};
-        std::shared_ptr<service_t ::work> work{new service_t::work(*service)};
-        pool_.push_back(service);
-        work_.push_back(work);
-    }
+lb::workers::service_pool::service_pool(std::size_t pool_size) : pool_size_(pool_size){
+
 }
 
 void lb::workers::service_pool::run_all() {
-    for (auto &service : pool_) {
-        thread_pool_.push_back(std::make_shared<std::thread>([&service]() {
-            service->run();
-            // TODO: log if service stopped
-        }));
+    std::vector<std::shared_ptr<std::thread> > threads;
+    for (std::size_t i = 0; i < pool_size_; ++i)
+    {
+        std::shared_ptr<std::thread> thread(new std::thread(
+            boost::bind(&boost::asio::io_service::run, &io_service_)));
+        threads.push_back(thread);
     }
-    for (auto &thread : thread_pool_) {
-        thread->join();
-    }
+
+    // Wait for all threads in the pool to exit.
+    for (std::size_t i = 0; i < threads.size(); ++i)
+        threads[i]->join();
 }
 
-boost::asio::io_service &lb::workers::service_pool::service() {
-    boost::asio::io_service &s = {*pool_.at(next_service_)};
-    ++next_service_;
-    if (next_service_ == pool_.size()) {
-        next_service_ = 0;
-    }
-    return s;
-}
