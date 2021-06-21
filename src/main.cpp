@@ -7,13 +7,12 @@ int main(int argc, char *argv[]) {
     lb::helpers::configurator configurator(argc, argv);
     lb::log_init();
 
-#undef __linux__
-#ifdef __linux__
-    if (!lb::os_unix::daemonize()) {
-        lb::log_error("Unable to daemonize application");
-        std::exit(EXIT_FAILURE);
+    if (configurator.is_daemonized()) {
+        if (!lb::os_unix::daemonize()) {
+            lb::log_error("Unable to daemonize application");
+            std::exit(EXIT_FAILURE);
+        }
     }
-#endif
 
     lb::server server{configurator};
     server.run();

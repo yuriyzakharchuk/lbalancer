@@ -17,6 +17,7 @@ configurator::configurator(int argc, char** argv) {
             parse_error_log(global);
             parse_info_log(global);
             parse_use_ipc(global);
+            parse_daemonized(global);
             parse_ssl_certificate(global);
             parse_ssl_private_key(global);
         } else {
@@ -109,6 +110,14 @@ void configurator::parse_info_log(YAML::Node& global) {
 void configurator::parse_use_ipc(YAML::Node& global) {
     if (global["use_ipc"]) {
         ipc_ = global["use_ipc"].as<bool>();
+    } else {
+        ipc_ = false;
+    }
+}
+
+void configurator::parse_daemonized(YAML::Node& global) {
+    if (global["daemonize"]) {
+        ipc_ = global["daemonize"].as<bool>();
     } else {
         ipc_ = false;
     }

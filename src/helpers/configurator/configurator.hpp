@@ -30,13 +30,8 @@ class configurator final {
         return static_cast<int>(std::thread::hardware_concurrency());
     }
 
-#if defined(__linux__)
     static constexpr const char *default_config_path =
         "/etc/lbalancer/lbalancer.conf";
-#elif defined(_WIN64)
-    static constexpr const char *default_config_path =
-        "с:\\lbalancer\\lbalancer.conf";
-#endif
 
     // TODO: rename
     binding_t construct();
@@ -52,6 +47,10 @@ class configurator final {
     [[nodiscard]] int worker_count() const noexcept { return worker_count_; }
 
     [[nodiscard]] inline bool use_ipc() const noexcept { return ipc_; }
+
+    [[nodiscard]] inline bool is_daemonized() const noexcept {
+        return daemonized_;
+    }
 
     [[maybe_unused]] [[nodiscard]] inline bool use_threads() const noexcept {
         return !use_ipc();
@@ -73,6 +72,7 @@ class configurator final {
     std::string default_ssl_certificate_{};
     std::string default_ssl_private_key_{};
     bool ipc_{};
+    bool daemonized_{};
 
     meta_frontend_pool meta_frontend_pool_;
     meta_backend_pool meta_backend_pool_;
@@ -82,6 +82,7 @@ class configurator final {
     void parse_error_log(YAML::Node &);
     void parse_info_log(YAML::Node &);
     void parse_use_ipc(YAML::Node &);
+    void parse_daemonized(YAML::Node &);
     void parse_ssl_certificate(YAML::Node &);
     void parse_ssl_private_key(YAML::Node &);
 
